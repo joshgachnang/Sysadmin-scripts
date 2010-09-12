@@ -19,10 +19,6 @@ apt-get -y update && apt-get -y upgrade
 apt-get -y install kate subversion eclipse powertop git-core gitosis flashplugin-nonfree
 ln -s /home/$USER/Ubuntu\ One/programming/ /home/$USER/programming
 
-#Link Documents to the Documents folder in 
-rm -rf /home/josh/Documents
-ln -s /home/josh/Ubuntu\ One/Documents/ /home/josh/Documents
-
 #Install Chrome
 echo "deb http://dl.google.com/linux/deb/ unstable non-free main" | sudo tee -a /etc/apt/sources.list > /dev/null
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
