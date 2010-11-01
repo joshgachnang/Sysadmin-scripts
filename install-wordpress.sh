@@ -156,6 +156,10 @@ if ( !defined('ABSPATH') )
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');" >> wp-config.php
 
+#Cleanup, or the index.html file will be displayed right away, along with all
+# the security keys.
+rm index.html
+
 #Installation is now complete..
 
 echo "Install completed successfully!"
