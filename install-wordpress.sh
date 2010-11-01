@@ -4,14 +4,29 @@
 #	$1 domain name (example.com)
 #	$2 mysql root password
 
-#stuff to do: check root, check arg numbers, print help, standard documenation
 
+if [ "$(id -u)" != "0" ]; then
+	echo ""
+	echo "Script must be run as root."
+	echo ""
+	exit 1
+fi
+
+if [ $# != 2  ]; then
+	echo ""
+	echo "Incorrect number of arguments, 2 required."
+	echo "1: domain name to install Wordpress to. (e.g. example.com)"
+	echo "2: MySQL root password (to create databases)"
+	echo ""
+	exit 2
+fi
 randpass() {
     CHAR="[:alnum:]"
     RET=`cat /dev/urandom | tr -cd "$CHAR" | head -c ${1:-16}`
 }
 
 INSTALL_DIR="/var/www/$1/htdocs"
+mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
 #Generate all required random passwords/salt/hashes
