@@ -105,6 +105,14 @@ define('DB_CHARSET', 'utf8');
 /** The Database Collate type. Don't change this if in doubt. */
 define('DB_COLLATE', '');
 
+/** The FTP settings. These settings are assumed, and if using 
+the ServerCobra set of scripts, it will work automagically */
+/*  WordPress FTP Information (For removing the constant password request on plugin install and removal) */
+
+define("FTP_HOST", "$1");
+define("FTP_USER", "$DOMAIN_NAME");
+define("FTP_PASS", "$USER_PASS");
+
 /**#@+
  * Authentication Unique Keys and Salts.
  *
@@ -160,8 +168,18 @@ require_once(ABSPATH . 'wp-settings.php');" >> wp-config.php
 # the security keys.
 rm index.html
 
+#Make sure no one can read this file, since it has all the passwords and such
+chmod 770 $DOMAIN_NAME wp-config.php
+
 #Installation is now complete..
 
+echo "////////////////////////////////////////////////////////////////////////////////"
 echo "Install completed successfully!"
 echo "Please visit http://$1/wp-admin/install.php to finalize your installation."
-
+echo ""
+echo "Your new wordpress username is: $DOMAIN_NAME"
+echo "with password: $USER_PASS"
+echo "and your MySQL username is: $DOMAIN_NAME"
+echo "with password: $DB-PASS"
+echo ""
+echo "You can also find these in wp-config.php"
