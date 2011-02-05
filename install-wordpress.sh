@@ -61,7 +61,8 @@ echo "CREATE DATABASE $DOMAIN_NAME;
 GRANT ALL PRIVILEGES ON $DOMAIN_NAME.* TO "$DOMAIN_NAME"@"localhost" IDENTIFIED BY '"$DB_PASS"';
 FLUSH PRIVILEGES;
 EXIT;" > input
-mysql --user=root --password=$2 < input > output.tab
+mysql --user=root --password=$2 < input
+rm input
 
 #Make config.php file
 echo "<?php
