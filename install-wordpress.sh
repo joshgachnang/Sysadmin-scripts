@@ -25,6 +25,9 @@ randpass() {
     RET=`cat /dev/urandom | tr -cd "$CHAR" | head -c ${1:-16}`
 }
 
+#Sanitize domain name to take out periods
+DOMAIN_NAME=$(echo $1 | sed "s/\./__/")
+
 #Generate all required random passwords/salt/hashes
 randpass
 DB_PASS=$RET
@@ -32,14 +35,12 @@ randpass
 USER_PASS=$RET
 
 #Make user and group
-useradd $DOMAIN_NAME
+useradd -m $DOMAIN_NAME
 echo $USER_PASS > tmp
 echo $USER_PASS >> tmp
 passwd $DOMAIN_NAME < tmp
 rm tmp
 
-#Sanitize domain name to take out periods
-DOMAIN_NAME=$(echo $1 | sed "s/\./__/")
 
 INSTALL_DIR="/home/$DOMAIN_NAME/wordpress"
 mkdir -p $INSTALL_DIR
