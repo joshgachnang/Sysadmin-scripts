@@ -35,7 +35,7 @@ randpass
 USER_PASS=$RET
 
 #Make user and group
-useradd -m $DOMAIN_NAME
+useradd -m -d /home/$DOMAIN_NAME -U $DOMAIN_NAME
 echo $USER_PASS > tmp
 echo $USER_PASS >> tmp
 passwd $DOMAIN_NAME < tmp
@@ -43,7 +43,6 @@ rm tmp
 
 
 INSTALL_DIR="/home/$DOMAIN_NAME/wordpress"
-mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
 #Get latest version, delete old version
@@ -58,8 +57,9 @@ rm -rf wordpress/
 #change permissions (not necessary so far)
 
 #Create Database and Database user
-echo "CREATE DATABASE $DOMAIN_NAME;
-GRANT ALL PRIVILEGES ON $DOMAIN_NAME.* TO "$DOMAIN_NAME"@"localhost" IDENTIFIED BY '"$DB_PASS"';
+echo "CREATE USER '$DOMAIN_NAME'@'localhost' IDENTIFIED BY '$DB_PASS'
+CREATE DATABASE $DOMAIN_NAME;
+GRANT ALL PRIVILEGES ON $DOMAIN_NAME.* TO '$DOMAIN_NAME'@'localhost' IDENTIFIED BY '$DB_PASS';
 FLUSH PRIVILEGES;
 EXIT;" > input
 mysql --user=root --password=$2 < input
