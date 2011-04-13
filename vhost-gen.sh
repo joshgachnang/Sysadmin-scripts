@@ -2,6 +2,12 @@
 #  1: Incorrect arguements
 #  2: Vhost already exists
 
+#Follows the Gachnang Username Standard (haha)
+# 1. Usernames for websites will be the web address.
+# 1a. All periods will be replaced by double underscores.
+# 1b. Username cannot exceed 16 characters, so they can be used in MySQL.
+# 1c. Web address will be in the form example.com or sub.example.com
+
 #Makes the script exit if anything is evaluated as false or a variable
 #isn't set properly. Robust!!
 #set -uo
@@ -10,20 +16,20 @@
 # '/etc/apache2/sites-available/' in Debian/Ubuntu. Make sure it ends in a "/"
 APACHE_DIR='/etc/apache2/sites-available/'
 
-#MySQL hostname. Change to "localhost" if Apache and MySQL are on the same
-#server.
-MYSQL_HOST="localhost"
-
-#Removes the periods in the domain name and replaces them with double
-#underscores (for usernames and database names)
-WIKI=$(echo $1 | sed "s/\./__/")
-
 #Random Password Generator Script originally from jbreland
 #http://legroom.net/2010/05/06/bash-random-password-generator
 
 # Generate a random password
 PASS=`cat /dev/urandom | tr -cd [:alnum:] | head -c ${1:-16}`
-WEB_PASS=`cat /dev/urandom | tr -cd [:alnum:] | head -c ${1:-16}`
+
+#Removes the periods in the domain name and replaces them with double
+#underscores (for usernames and database names)
+if [ ${#name} -gt 16 ]; then
+  USERT=$(echo $1 | sed "s/\./__/" | cut -c1-16)
+else
+  USERT=$(echo $1 | sed "s/\./__/")
+fi
+
 
 #Print usage if no args.
 if [ $# != "2" ]; then
@@ -49,66 +55,52 @@ if [ -f $APACHE_DIR$1 ]; then
   exit 2
 fi
 
+
+if [ ! -d /home/$USER ]; then
+  #User doesn't exist, doesn't consider users without home directories
+  USERDIR="/home/$USERTRUNC"
+  #Create user and user directory
+  useradd -m -d $USERDIR -U $USERT
+  #Set password
+  echo $PASS | passwd $USERT --stdin
+fi
+
+mkdir /home/$USERT/$1/
+mkdir /home/$USERT/$1/htdocs
+mkdir /home/$USERT/$1/logs
+touch /home/$USERT/$1/logs/access.log
+touch /home/$USERT/$1/logs/error.log
+
+
 #Write the vhost file to the Apache vhost directory
-#echo "<VirtualHost *:80>" >> $APACHE_DIR$1
-#echo "  ServerName $1" >> $APACHE_DIR$1
-#echo "  ServerAlias $1" >> $APACHE_DIR$1
-#echo "  DocumentRoot /var/www/dekiwiki/" >> $APACHE_DIR$1 
-#echo "</VirtualHost>" >> $APACHE_DIR$1
+echo "<VirtualHost *:80>
+        ServerAdmin $2
+        ServerName  $1
+        ServerAlias www.$1
+
+        DocumentRoot /home/$USERT/$1/htdocs/
+        <Directory /home/$USERT/$1/htdocs/>
+                Options Indexes FollowSymLinks ExecCGI
+                AllowOverride All
+                Order allow,deny
+                Allow from all
+        </Directory>
+
+        # Logfiles
+        ErrorLog  /home/$USERT/$1/logs/error.log
+        CustomLog /home/$USERT/$1/logs/access.log combined
+
+        SuexecUserGroup $USERT $USERT
+
+        ScriptAlias /php-fastcgi/ /home/$USERT/$1/php-fastcgi/
+        FCGIWrapper /home/$USERT/$1/php-fastcgi/wrapper .php
+        AddHandler fcgid-script .php
+        Options ExecCGI Indexes
+</VirtualHost>
+" > $APACHE_DIR$1
 
 #Enable the new vhost
-#a2ensite $APACHE_DIR$1
-
-/var/www/dekiwiki/maintenance/createdb.sh --dbName $1 --dbAdminUser root --dbAdminPassword ThetHethE \
- --dbServer localhost --dbWikiUser $WIKI --wikiAdmin Admin \
- --wikiAdminPassword $PASS --wikiAdminEmail $2 \
- --storageDir /var/www/dekiwiki/attachments/$1 \
- --s3PublicKey AKIAJRNNTU7U2XLDXSXA \
- --s3PrivateKey s36seTXsQNKnIbfYW5NXm7jNGTTlAOSdhzM6H3Ao \
- --s3Bucket servercobra-mindtouch --s3Prefix $1 --s3Timeout 60\
- --storageDir /var/www/dekiwiki/$1 >> /tmp/createdb
-
-#Adds to the mindtouch config file, using sed to go in the middle of the file.
-# -i is to do in place editing, while creating a backup file (file.bak)
-#Searches for string "/globalconfig" (note escaped /)
-#Then appends the rest at the next line (a\ )
-#Final line specifies config file location. Note double quotes to allow
-#variables in sed strings.
-
-
-sed -i.bak "
-/\/globalconfig/ a\
-  \        <config id=\"$1\">\
-\n\          <host>$1</host>\
-\n\          <db-server>localhost</db-server>\
-\n\          <db-port>3306</db-port>\
-\n\          <db-catalog>$WIKI</db-catalog>\
-\n\          <db-user>$WIKI</db-user>\
-\n\          <db-password>$PASS</db-user>\
-\n\          <db-options>>pooling=true; Connection Timeout=5; Protocol=socket; Min Pool Size=2; Max Pool Size=50; Connection Reset=false;character set=utf8;$
-\n\        </config>
-" /etc/dekiwiki/mindtouch.deki.startup.xml
-
-#Does the same as above, but modifies the LocalSettings.php file in
-#the dekiwiki web directory. Not sure why there are two places for
-#the same information though.
-
-sed -i.bak "
-/$wgWikis = array(/ a\
-  \        '$1' => array(
-\n\                'db-server' => 'localhost',
-\n\                'db-port' => '3306',
-\n\                'db-catalog' => '$WIKI',
-\n\                'db-user' => '$WIKI',
-\n\                'db-password' => '$PASS',
-\n\                ),
-" /var/www/dekiwiki/LocalSettings.php
+a2ensite $APACHE_DIR$1
 
 #Make Apache aware of the new VHost file.
 /etc/init.d/apache2 reload
-#Restart Mindtouch for changes to take effect. This needs to be fixed
-#eventually, because everyone's site goes down at the same time.
-#MindTouch has an artice on how they fixed it, which may be of use.
-#
-#http://developer.mindtouch.com/Wik.is/EC2_Infrastructure
-/etc/init.d/dekiwiki restart
