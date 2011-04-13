@@ -40,6 +40,9 @@ else
   USERT=$(echo $1 | sed "s/\./__/")
 fi
 
+if [ USER==1 ]; then
+  USERT=$(echo $1 | sed "s/\./__/" | cut -c1-16)
+fi
 
 #Print usage if no args.
 if [ $# != "2" ]; then
