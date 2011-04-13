@@ -22,6 +22,16 @@ APACHE_DIR='/etc/apache2/sites-available/'
 # Generate a random password
 PASS=`cat /dev/urandom | tr -cd [:alnum:] | head -c ${1:-16}`
 
+#Check for subdomain. Only works for singlur subdomain.
+if [[ $1 == *.*.* ]]; then
+  #Domain is a subdomain
+  SUBDOMAIN=1
+  DOMAIN=${1#*.}
+else
+  #Not subdomain
+  SUBDOMAIN=0
+fi
+
 #Removes the periods in the domain name and replaces them with double
 #underscores (for usernames and database names)
 if [ ${#name} -gt 16 ]; then
@@ -63,6 +73,8 @@ if [ ! -d /home/$USER ]; then
   useradd -m -d $USERDIR -U $USERT
   #Set password
   echo $PASS | passwd $USERT --stdin
+else
+  echo "User already exists"
 fi
 
 mkdir /home/$USERT/$1/
