@@ -1,0 +1,34 @@
+#Check if required variables are non null. If not, exit with error.
+instance_id=$($EC2_HOME/bin/ec2-run-instances ami-7000f019 -k Default | awk '/INSTANCE/{print $2}')
+
+#Check if file exists. Figure out something.
+echo $instance_id > .current_test_instance_id
+echo -n 'Started new instance with id: '
+echo $instance_id
+
+public_dns=$(ec2-describe-instances $instance_id | awk '/INSTANCE/{print $4}')
+
+echo 'Waiting for instance to finish starting'
+
+while [[ $public_dns == 'pending' ]]; do
+  echo -n .
+  public_dns=$(ec2-describe-instances $instance_id | awk '/INSTANCE/{print $4}')
+done
+
+#Again, check if file exists. If it does, who knows?
+echo $public_dns > .current_test_instance_dns
+echo $public_dns
+
+echo -n 'Instance now running. Attempting autoconnect or connect to: '
+echo $public_dns
+
+echo - 'Waiting on ssh..'
+while ssh -o StrictHostKeyChecking=no -i Default.pem ubuntu@$public_dns true && test; 
+do echo -n .; sleep .5; done
+echo ''
+
+echo 'sleeping for 3s before accessing server..'
+sleep 3
+
+echo "Connecting to $public_dns"
+ssh -o StrictHostKeyChecking=no -i Default.pem ubuntu@$public_dns
