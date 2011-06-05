@@ -5,6 +5,11 @@
 
 # Based off http://www.straw-dogs.co.uk/12/10/python-virtual-host-creator/
 
+#Builds /etc/apache/sites-available/file
+#Add user
+#Build www dir /home/user/domain.com
+#a2ensite sitename
+
 import getopt
 import os
 import subprocess

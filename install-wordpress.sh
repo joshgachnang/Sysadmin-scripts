@@ -25,9 +25,8 @@ randpass() {
     RET=`cat /dev/urandom | tr -cd "$CHAR" | head -c ${1:-16}`
 }
 
-INSTALL_DIR="/var/www/$1/htdocs"
-mkdir -p $INSTALL_DIR
-cd $INSTALL_DIR
+#Sanitize domain name to take out periods
+DOMAIN_NAME=$(echo $1 | sed "s/\./__/")
 
 #Generate all required random passwords/salt/hashes
 randpass
@@ -35,8 +34,16 @@ DB_PASS=$RET
 randpass
 USER_PASS=$RET
 
-#Sanitize domain name to take out periods
-DOMAIN_NAME=$(echo $1 | sed "s/\./__/")
+#Make user and group
+useradd -m -d /home/$DOMAIN_NAME -U $DOMAIN_NAME
+echo $USER_PASS > tmp
+echo $USER_PASS >> tmp
+passwd $DOMAIN_NAME < tmp
+rm tmp
+
+
+INSTALL_DIR="/home/$DOMAIN_NAME/wordpress"
+cd $INSTALL_DIR
 
 #Get latest version, delete old version
 rm latest.*
@@ -44,30 +51,19 @@ wget http://wordpress.org/latest.tar.gz
 
 #Extract to web directory
 tar xf latest*
-mv wordpress/* .
+mv wordpress/* /home/$DOMAIN_NAME/wordpress/
 rm -rf wordpress/
-
-#Make user and group
-useradd $DOMAIN_NAME
-groupadd $DOMAIN_NAME
-echo $USER_PASS > tmp
-echo $USER_PASS >> tmp
-passwd $DOMAIN_NAME < tmp
-usermod -g $DOMAIN_NAME $DOMAIN_NAME
-
-#chown and chgrp entire directory to new user
-chown -R $DOMAIN_NAME *
-chgrp -R $DOMAIN_NAME *
 
 #change permissions (not necessary so far)
 
 #Create Database and Database user
-echo "CREATE DATABASE $DOMAIN_NAME;
-GRANT ALL PRIVILEGES ON $DOMAIN_NAME.* TO "$DOMAIN_NAME"@"localhost" IDENTIFIED BY '"$DB_PASS"';
+echo "CREATE USER '$DOMAIN_NAME'@'localhost' IDENTIFIED BY '$DB_PASS'
+CREATE DATABASE $DOMAIN_NAME;
+GRANT ALL PRIVILEGES ON $DOMAIN_NAME.* TO '$DOMAIN_NAME'@'localhost' IDENTIFIED BY '$DB_PASS';
 FLUSH PRIVILEGES;
 EXIT;" > input
-mysql --user=root --password=$2 < input > output.tab
-
+mysql --user=root --password=$2 < input
+rm input
 
 #Make config.php file
 echo "<?php
@@ -104,6 +100,14 @@ define('DB_CHARSET', 'utf8');
 
 /** The Database Collate type. Don't change this if in doubt. */
 define('DB_COLLATE', '');
+
+/** The FTP settings. These settings are assumed, and if using 
+the ServerCobra set of scripts, it will work automagically */
+/*  WordPress FTP Information (For removing the constant password request on plugin install and removal) */
+
+define("FTP_HOST", "$1");
+define("FTP_USER", "$DOMAIN_NAME");
+define("FTP_PASS", "$USER_PASS");
 
 /**#@+
  * Authentication Unique Keys and Salts.
@@ -160,8 +164,18 @@ require_once(ABSPATH . 'wp-settings.php');" >> wp-config.php
 # the security keys.
 rm index.html
 
+#Make sure no one can read this file, since it has all the passwords and such
+chmod 770 $DOMAIN_NAME wp-config.php
+
 #Installation is now complete..
 
+echo "////////////////////////////////////////////////////////////////////////////////"
 echo "Install completed successfully!"
 echo "Please visit http://$1/wp-admin/install.php to finalize your installation."
-
+echo ""
+echo "Your new wordpress username is: $DOMAIN_NAME"
+echo "with password: $USER_PASS"
+echo "and your MySQL username is: $DOMAIN_NAME"
+echo "with password: $DB-PASS"
+echo ""
+echo "You can also find these in wp-config.php"

@@ -1,0 +1,9 @@
+#Check if variables set. If not, exit with herror.
+#Check if file exists first. If not, exit with error.
+ec2-terminate-instances $(cat ~/Dropbox/config/ec2/.current_test_instance_id)
+
+echo -n 'Killed test instance with id '
+echo $(cat .current_test_instance_id)
+
+rm ~/Dropbox/config/ec2/.current_test_instance_id
+rm ~/Dropbox/config/ec2/.current_test_instance_dns
