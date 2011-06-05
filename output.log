@@ -1,0 +1,65 @@
+total 36
+-rw-r--r-- 1 josh josh 1471 2011-01-04 14:29 cmd-test.py
+-rw-r--r-- 1 josh josh 1473 2011-01-04 14:29 cmd-test.py~
+-rw-r--r-- 1 josh josh    0 2011-01-04 14:29 error.log
+-rw-r--r-- 1 josh josh 4514 2011-01-04 13:02 install-wordpress.sh
+-rw-r--r-- 1 josh josh 1133 2011-01-04 13:02 karmicsetup.sh
+-rw-r--r-- 1 josh josh    0 2011-01-04 14:29 output.log
+-rw-r--r-- 1 josh josh    0 2011-01-04 13:02 README
+-rw-r--r-- 1 josh josh  881 2011-01-04 13:02 rsyncFreeNAS.sh
+-rw-r--r-- 1 josh josh  809 2011-01-04 13:02 ssh-secure.py
+-rwxr-xr-x 1 josh josh 3147 2011-01-04 14:20 vhost-gen.py
+-rwxr-xr-x 1 josh josh 3141 2011-01-04 14:20 vhost-gen.py~
+Command: ls-ltotal 40
+-rw-r--r-- 1 josh josh 1471 2011-01-04 14:30 cmd-test.py
+-rw-r--r-- 1 josh josh 1471 2011-01-04 14:30 cmd-test.py~
+-rw-r--r-- 1 josh josh    0 2011-01-04 14:29 error.log
+-rw-r--r-- 1 josh josh 4514 2011-01-04 13:02 install-wordpress.sh
+-rw-r--r-- 1 josh josh 1133 2011-01-04 13:02 karmicsetup.sh
+-rw-r--r-- 1 josh josh  663 2011-01-04 14:30 output.log
+-rw-r--r-- 1 josh josh    0 2011-01-04 13:02 README
+-rw-r--r-- 1 josh josh  881 2011-01-04 13:02 rsyncFreeNAS.sh
+-rw-r--r-- 1 josh josh  809 2011-01-04 13:02 ssh-secure.py
+-rwxr-xr-x 1 josh josh 3147 2011-01-04 14:20 vhost-gen.py
+-rwxr-xr-x 1 josh josh 3141 2011-01-04 14:20 vhost-gen.py~
+Command: ls-l
+total 40
+-rw-r--r-- 1 josh josh 1492 2011-01-04 14:30 cmd-test.py
+-rw-r--r-- 1 josh josh 1490 2011-01-04 14:30 cmd-test.py~
+-rw-r--r-- 1 josh josh    0 2011-01-04 14:29 error.log
+-rw-r--r-- 1 josh josh 4514 2011-01-04 13:02 install-wordpress.sh
+-rw-r--r-- 1 josh josh 1133 2011-01-04 13:02 karmicsetup.sh
+-rw-r--r-- 1 josh josh 1327 2011-01-04 14:30 output.log
+-rw-r--r-- 1 josh josh    0 2011-01-04 13:02 README
+-rw-r--r-- 1 josh josh  881 2011-01-04 13:02 rsyncFreeNAS.sh
+-rw-r--r-- 1 josh josh  809 2011-01-04 13:02 ssh-secure.py
+-rwxr-xr-x 1 josh josh 3147 2011-01-04 14:20 vhost-gen.py
+-rwxr-xr-x 1 josh josh 3141 2011-01-04 14:20 vhost-gen.py~
+Command: ldfs-l
+Command: ls-l
+total 40
+-rw-r--r-- 1 josh josh 1492 2011-01-04 14:32 cmd-test.py
+-rw-r--r-- 1 josh josh 1494 2011-01-04 14:32 cmd-test.py~
+-rw-r--r-- 1 josh josh    0 2011-01-04 14:29 error.log
+-rw-r--r-- 1 josh josh 4514 2011-01-04 13:02 install-wordpress.sh
+-rw-r--r-- 1 josh josh 1133 2011-01-04 13:02 karmicsetup.sh
+-rw-r--r-- 1 josh josh 2007 2011-01-04 14:32 output.log
+-rw-r--r-- 1 josh josh    0 2011-01-04 13:02 README
+-rw-r--r-- 1 josh josh  881 2011-01-04 13:02 rsyncFreeNAS.sh
+-rw-r--r-- 1 josh josh  809 2011-01-04 13:02 ssh-secure.py
+-rwxr-xr-x 1 josh josh 3147 2011-01-04 14:20 vhost-gen.py
+-rwxr-xr-x 1 josh josh 3141 2011-01-04 14:20 vhost-gen.py~
+Command: lfs-l
+Command: ls-l
+total 40
+-rw-r--r-- 1 josh josh 1468 2011-01-04 14:33 cmd-test.py
+-rw-r--r-- 1 josh josh 1492 2011-01-04 14:33 cmd-test.py~
+-rw-r--r-- 1 josh josh    0 2011-01-04 14:29 error.log
+-rw-r--r-- 1 josh josh 4514 2011-01-04 13:02 install-wordpress.sh
+-rw-r--r-- 1 josh josh 1133 2011-01-04 13:02 karmicsetup.sh
+-rw-r--r-- 1 josh josh 2686 2011-01-04 14:33 output.log
+-rw-r--r-- 1 josh josh    0 2011-01-04 13:02 README
+-rw-r--r-- 1 josh josh  881 2011-01-04 13:02 rsyncFreeNAS.sh
+-rw-r--r-- 1 josh josh  809 2011-01-04 13:02 ssh-secure.py
+-rwxr-xr-x 1 josh josh 3147 2011-01-04 14:20 vhost-gen.py
+-rwxr-xr-x 1 josh josh 3141 2011-01-04 14:20 vhost-gen.py~
