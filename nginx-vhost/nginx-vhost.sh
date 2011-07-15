@@ -98,6 +98,9 @@ GRANT ALL PRIVILEGES ON $USER_TRUNC.* to '$USER_TRUNC'@'localhost' IDENTIFIED BY
 	rm $USERNAME.sql
 	echo "Created MySQL user: $USER_TRUNC password: $DB_PASS database: $DOMAIN_TRUNC"
 }
+function add_to_ftp {
+	usermod -g proftpd $USERNAME
+}
 function install_wordpress {
 	wget http://wordpress.org/latest.tar.gz
 	tar xf latest.tar.gz
@@ -107,12 +110,16 @@ function install_wordpress {
 	sed -i "s|username_here|$USERNAME|g" $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
 	sed -i "s|password_here|$DB_PASS|g" $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
 
+	echo "	define(\"FTP_HOST\", \"$DOMAIN\");
+	define(\"FTP_USER\", \"$USERNAME\");
+	define(\"FTP_PASS\", \"$USERPASS\");" >> $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
+
 	# Add in salts from the wordpress salt generator
 	wget https://api.wordpress.org/secret-key/1.1/salt/
 	sed -i "s/|/a/g" index.html
 #	cat index.html | while read line; do
- #   		sed -i "s|define('.*',.*'put your unique phrase here');|$line|" $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
-#		sed 1d $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
+ #   	sed -i "s|define('.*',.*'put your unique phrase here');|$line|" $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
+#	sed 1d $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
 #	done
 	sed -i '/#@-/r index.html' $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
 	sed -i "/#@+/,/#@-/d" $USER_DIR/$USERNAME/$DOMAIN/htdocs/wp-config.php
@@ -142,5 +149,6 @@ php_pool
 nginx_vhost
 server_reload
 prepare_mysql
+add_to_ftp
 install_wordpress
 exit 0
