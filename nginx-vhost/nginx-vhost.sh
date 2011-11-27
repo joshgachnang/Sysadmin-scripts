@@ -26,7 +26,11 @@ function sanity_check {
 		echo "$USERNAME exists!"
 		exit 3
 	fi
-
+	if [ ! -e /root/mysql ]; then
+		echo "Root MySQL password file missing. Please run create the file /root/mysql,"
+		echo "And put your root password as the first and only line."
+		exit 4
+	fi
 }
 
 function password {
