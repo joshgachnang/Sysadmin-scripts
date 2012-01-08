@@ -1,3 +1,2 @@
 upstream default  {
-server tester1.com;
 }
