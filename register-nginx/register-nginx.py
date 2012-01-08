@@ -16,8 +16,9 @@
 # fix it.
 
 import sys
+import os
 
-DEBUG = False
+DEBUG = True
 
 if DEBUG:
 	file_template = "%s.upstream"	
@@ -25,15 +26,32 @@ else:
 	file_template = "/etc/nginx/%s.upstream"
 
 def register(hostname, cluster="default"):
+	# Blank file, add in required lines
+	if os.path.getsize(file_template % cluster) == 0:
+		with open(file_template % cluster, 'a') as cluster_file:
+			cluster_file.write("upstream %s  {\n}" % cluster)
+
 	# See if the hostname exists already
-	with open(file_template % cluster) as cluster_file:
-		for line in cluster_file.readlines():
-			if hostname + '\n' == line:
+	with open(file_template % cluster, 'r') as cluster_file:
+		new_file = []	
+		lines = cluster_file.readlines()
+		for line in lines:
+			if "{" in line:
+				new_file.append(line)
+			elif "}" in line:
+				line = "server " + hostname + ';\n'
+				new_file.append(line)
+				new_file.append('}')
+			elif "server " + hostname + ';\n' == line:
 				print "Host %s already registered with cluster %s" % (hostname, cluster)
 				sys.exit(1)
+			else:
+				new_file.append(line)
 	# Append the new hostname to the file
-	with open(file_template % cluster, 'a') as cluster_file:
-		cluster_file.write(hostname + '\n')
+	with open(file_template % cluster, 'w') as cluster_file:
+		for line in new_file:
+			cluster_file.write(line)
+	
 def deregister(hostname, cluster="default"):
 	new_file = []
 	# Read through the file, add all lines that aren't the hostname to a new array 	
@@ -41,8 +59,10 @@ def deregister(hostname, cluster="default"):
 		lines = cluster_file.readlines()
 		old_file_len = len(lines)
 		for line in lines:
-			print hostname, line
-			if hostname + '\n' != line:
+			if "{" in line or "}" in line:
+				new_file.append(line)
+			elif "server " + hostname + ';\n' != line:
+				#print hostname, line
 				new_file.append(line)
 	if len(new_file) == old_file_len:
 		print "Host %s not registered with cluster %s" % (hostname, cluster)

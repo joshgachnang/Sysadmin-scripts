@@ -1,2 +1,3 @@
-test.com
-test2.com
+upstream default  {
+server tester1.com;
+}
