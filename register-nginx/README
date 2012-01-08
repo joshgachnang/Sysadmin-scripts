@@ -1,0 +1,15 @@
+# This script sits on an Nginx server, and is run by remote Apache/Nginx
+# or app servers to register themselves in a cluster with Nginx. We are using
+# this on EC2, to let web/php servers register with the Nginx load balancer.
+
+# Assumes nginx.conf has an upstream default in the config like so:
+# upstream default { include /etc/nginx/default.upstream; }
+# This file is simply a list of hostnames.
+# You may include other upstream files, in the form:
+# upstream cluster_name { include /etc/nginx/cluster_name.upstream; }
+
+# Usage: python register-nginx.py [-d/--deregister] client_hostname [cluster_name]
+
+# By the way, I know this is UGLY. But it was quick and dirty. Some day, I might
+# fix it.
+
